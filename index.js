@@ -1,21 +1,18 @@
-// index.js
 require('dotenv').config();
 const express = require('express');
 const { Client, middleware } = require('@line/bot-sdk');
-
-const app = express();
 
 const config = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET,
 };
 
+const app = express();
 const client = new Client(config);
 
-// Webhookエンドポイント（←これがないとLINEが404出す）
+// Webhookエンドポイント
 app.post('/webhook', middleware(config), (req, res) => {
-  Promise
-    .all(req.body.events.map(handleEvent))
+  Promise.all(req.body.events.map(handleEvent))
     .then((result) => res.json(result))
     .catch((err) => {
       console.error('❌ Error in webhook handler:', err);
@@ -23,22 +20,21 @@ app.post('/webhook', middleware(config), (req, res) => {
     });
 });
 
-// メッセージ処理
+// メッセージイベントの処理
 function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
-    return Promise.resolve(null); // テキスト以外はスルー
+    return Promise.resolve(null); // テキスト以外は無視
   }
 
-  // オウム返しじゃなく、ひとこと返すBot
   const replyText = `こんにちは！「${event.message.text}」って言ったね♪`;
-
   return client.replyMessage(event.replyToken, {
     type: 'text',
     text: replyText,
   });
 }
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 LINE Bot server running at http://localhost:${PORT}`);
+// ポート設定
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`🚀 LINE Bot is running on port ${port}`);
 });
