@@ -6,6 +6,10 @@ const config = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET,
 };
+// 追加：ルートアクセスに応答するための処理（Railway対策）
+app.get('/', (req, res) => {
+  res.send('LINE Bot is alive!');
+});
 
 const app = express();
 const client = new Client(config);
