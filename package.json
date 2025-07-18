@@ -1,15 +1,14 @@
-
 {
   "name": "line-bot-talker",
   "version": "1.0.0",
-  "description": "くまお先生 おしゃべり専用LINE Bot",
+  "description": "Simple LINE Chat Bot",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "@line/bot-sdk": "^7.4.0",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "line-bot-sdk": "6.3.0",
+    "dotenv": "^16.3.1"
   }
 }
