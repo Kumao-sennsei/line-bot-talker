@@ -1,42 +1,38 @@
-// index.js
 require('dotenv').config();
 const express = require('express');
 const line = require('@line/bot-sdk');
 
+const app = express();
+const port = process.env.PORT || 3000;
+
+// LINE Botの設定
 const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.CHANNEL_SECRET,
 };
 
-const app = express();
-const client = new line.Client(config);
-
-// Webhook受信（LINE Platform → Bot）
+// Webhookエンドポイントの設定
 app.post('/webhook', line.middleware(config), (req, res) => {
-  console.log('Webhook received:', req.body.events);
-  Promise.all(req.body.events.map(handleEvent))
-    .then((result) => res.json(result))
-    .catch((err) => {
-      console.error('Error handling event:', err);
-      res.status(500).end();
-    });
+  Promise
+    .all(req.body.events.map(handleEvent))
+    .then((result) => res.json(result));
 });
 
-// メッセージ処理（テキストのみ応答）
+// メッセージイベントの処理
 function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
-    return Promise.resolve(null); // 無視するイベントはここでスキップ
+    return Promise.resolve(null);
   }
 
-  // オウム返しスタイルで返信
+  const client = new line.Client(config);
+
   return client.replyMessage(event.replyToken, {
     type: 'text',
-    text: `くまお先生：『${event.message.text}』って言ったね？`,
+    text: `くまお先生だよ！「${event.message.text}」って言ったね〜(●´ω｀●)`,
   });
 }
 
-// サーバー起動（Railwayがポート指定してくれる）
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ LINE Bot is running on port ${PORT}`);
+// サーバー起動
+app.listen(port, () => {
+  console.log(`LINE Bot is running on port ${port}`);
 });
